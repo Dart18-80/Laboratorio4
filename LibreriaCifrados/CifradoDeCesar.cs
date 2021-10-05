@@ -70,7 +70,7 @@ namespace LibreriaCifrados
             int LongitudArchivo = Traducir.Length;
             CreateNewDiccionary(Key);
             string NewArchivo = "";
-            for (int i = 0; i <= LongitudArchivo; i++)
+            for (int i = 0; i < LongitudArchivo; i++)
             {
                 NewArchivo += NewDiccionary[Traducir[i]];
             }

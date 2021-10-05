@@ -14,6 +14,7 @@ namespace CifradoConsole
             string DatoString = default;
             byte[] DatoByte = default;
             CifradoDeCesar CifCesar = new CifradoDeCesar();
+            CifradoZigZag CifZigZag = new CifradoZigZag();
 
             while (verificar)
             {
@@ -35,6 +36,8 @@ namespace CifradoConsole
                     int Clave = Convert.ToInt32(Console.ReadLine());
 
                     object aCifrar = Texto;
+
+                    CifZigZag.EncryptZZ(aCifrar, Clave);
                 }
                 else if(numero==2)
                 {
@@ -46,6 +49,8 @@ namespace CifradoConsole
 
                     object aCifrar = Texto;
                     string MensajeCifrado=CifCesar.Encrypt(aCifrar, Clave);
+                    string MensajeCifrados = CifCesar.Decrypt(aCifrar, Clave);
+
 
                 }
                 else if (numero==3)
