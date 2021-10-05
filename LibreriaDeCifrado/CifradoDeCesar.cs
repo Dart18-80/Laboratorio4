@@ -27,7 +27,8 @@ namespace LibreriaDeCifrado
             byte FirstValue = 33;
             for (int i = Long; i >= 0; i--) 
             {
-                InitialDiccionary[NewKey[i]] = '¬';
+                InitialDiccionary.Remove(NewKey[i]);
+                InitialDiccionary.Add(NewKey[i],'¬');
             }
             for (int i = 0; i >= Long; i++) 
             {
