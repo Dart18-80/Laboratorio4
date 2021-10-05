@@ -4,7 +4,9 @@ using System.Text;
 
 namespace LibreriaCifrados
 {
-    class CifradoZigZag
+    public class CifradoZigZag<T> where T : IComparable
     {
+        protected List<T> CadenaOlas = new List<T>();
+
     }
 }
