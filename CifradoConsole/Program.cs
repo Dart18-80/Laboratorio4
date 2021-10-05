@@ -32,7 +32,8 @@ namespace CifradoConsole
                     Console.WriteLine("Ingrese la Clave del Texto");
                     int Clave = Convert.ToInt32(Console.ReadLine());
 
-                    DatoByte = Encoding.ASCII.GetBytes(Texto);
+                    object aCifrar = Texto;
+                    
                 }
                 else if(numero==2)
                 {
@@ -42,7 +43,7 @@ namespace CifradoConsole
                     Console.WriteLine("Ingrese la Clave del Texto");
                     string Clave = Convert.ToString(Console.ReadLine());
 
-                    DatoByte = Encoding.ASCII.GetBytes(Texto);
+                    object aCifrar = Texto;
                 }
                 else if (numero==3)
                 {
