@@ -24,14 +24,22 @@ namespace Laboratorio4.Controllers
         [HttpPost]
         public IActionResult ZizZag([FromForm] IFormFile file, string clave)
         {
-            byte[] Lectura = Archivo(file);
+            object Lectura = Archivo(file);
             return Ok();
         }
-        public byte[] Archivo(IFormFile file)
+        [Route("api/cipher/csr/{Clave}")]
+        [HttpPost]
+        public IActionResult Cesar([FromForm] IFormFile file, string clave)
+        {
+            object Lectura = Archivo(file);
+            return Ok();
+        }
+            public object Archivo(IFormFile file)
         {
             string uploadsFolder = null;
-            byte[] Dato = default;
+            object aCifrar=default;
             string ccc = default;
+
             if (file!=null)
             {
                 uploadsFolder = Path.Combine(fistenviroment.ContentRootPath, "Upload");
@@ -44,10 +52,10 @@ namespace Laboratorio4.Controllers
                     }
                 }
                 ccc = System.IO.File.ReadAllText(filepath);
-                Dato = Encoding.ASCII.GetBytes(ccc);
-                string String = Encoding.Default.GetString(Dato);
+                aCifrar = ccc;
+
             }
-            return Dato;
+            return aCifrar;
         }
     }
 }
