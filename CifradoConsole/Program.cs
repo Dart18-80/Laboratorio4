@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using LibreriaCifrados;
 
 namespace CifradoConsole
 {
@@ -12,6 +13,7 @@ namespace CifradoConsole
             bool verificar = true;
             string DatoString = default;
             byte[] DatoByte = default;
+            CifradoDeCesar CifCesar = new CifradoDeCesar();
 
             while (verificar)
             {
@@ -33,7 +35,6 @@ namespace CifradoConsole
                     int Clave = Convert.ToInt32(Console.ReadLine());
 
                     object aCifrar = Texto;
-                    
                 }
                 else if(numero==2)
                 {
@@ -44,6 +45,8 @@ namespace CifradoConsole
                     string Clave = Convert.ToString(Console.ReadLine());
 
                     object aCifrar = Texto;
+                    string MensajeCifrado=CifCesar.Encrypt(aCifrar, Clave);
+
                 }
                 else if (numero==3)
                 {
