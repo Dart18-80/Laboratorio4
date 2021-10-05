@@ -25,7 +25,7 @@ namespace LibreriaCifrados
             byte[] NewKey = Composition.Distinct().ToArray();
             int Long = NewKey.Length;
             byte FirstValue = 33;
-            for (int i = Long; i >= 0; i--) 
+            for (int i = Long-1; i >= 0; i--) 
             {
                 InitialDiccionary[NewKey[i]] = '¬';
             }
@@ -53,7 +53,7 @@ namespace LibreriaCifrados
             int LongitudArchivo = Traducir.Length;
             CreateNewDiccionary(Key);
             string NewArchivo = "";
-            for (int i = 0; i <= LongitudArchivo; i++) 
+            for (int i = 0; i < LongitudArchivo; i++) 
             {
                 NewArchivo += NewDiccionary[Traducir[i]];
             }
