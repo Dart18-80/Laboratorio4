@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace LibreriaCifrados
 {
@@ -9,13 +10,13 @@ namespace LibreriaCifrados
         protected List<string[]> CadenaOlas = new List<string[]>();
         protected List<string[]> CadenaInversa = new List<string[]>();
 
-        void CrearDiccionario(object mensaje, int Lonclave) 
+        void CrearDiccionario(object mensaje, int Lonclave)
         {
             int LongitudObj = (Convert.ToString(mensaje).Length) % Lonclave;
             int NumerodeOlas = default;
             char[] Letra = new char[Lonclave];
 
-            if (LongitudObj==0)//Significa que las olas estan llenas
+            if (LongitudObj == 0)//Significa que las olas estan llenas
             {
                 char[] Cad1 = Convert.ToString(mensaje).ToCharArray();
                 NumerodeOlas = Convert.ToString(mensaje).Length / Lonclave;
@@ -34,7 +35,7 @@ namespace LibreriaCifrados
             }
         }
 
-        public string EncryptZZ(object cadena, int key) 
+        public string EncryptZZ(object cadena, int key)
         {
             int LongOla = 2 + 2 * (key - 2);
             string mensaje = LlenadoText(cadena.ToString(), LongOla).ToString();
@@ -53,11 +54,11 @@ namespace LibreriaCifrados
                         TextoCifrado += CadenaOlas[j][0];
                     }
                 }
-                else if (i == key-1)
+                else if (i == key - 1)
                 {
                     for (int j = 0; j < CantOlas; j++)
                     {
-                        TextoCifrado += CadenaOlas[j][key-1];
+                        TextoCifrado += CadenaOlas[j][key - 1];
                     }
                 }
                 else
@@ -65,13 +66,13 @@ namespace LibreriaCifrados
                     for (int j = 0; j < CantOlas; j++)
                     {
                         TextoCifrado += CadenaOlas[j][i];
-                        TextoCifrado += CadenaOlas[j][LongOla-i];
+                        TextoCifrado += CadenaOlas[j][LongOla - i];
                     }
                 }
             }
             return TextoCifrado;
         }
-        public string Decrypt(object cadena, int clave) 
+        public string Decrypt(object cadena, int clave)
         {
             string cad = cadena.ToString();
             int LongOla = 2 + 2 * (clave - 2);//la cantidad de caracteres de una ola
@@ -84,16 +85,17 @@ namespace LibreriaCifrados
             for (int i = 0; i < NumOlas; i++)
             {
                 MensajeDescodificado += CadenaInversa[0][i];
-                for (int j = 1; j < clave-1; j++)
+                for (int j = 1; j < clave - 1; j++)
                 {
                     MensajeDescodificado += CadenaInversa[j][2 * i];
                 }
-                MensajeDescodificado += CadenaInversa[clave-1][i];
-                for (int k = clave-2; k > 0; k--)
+                MensajeDescodificado += CadenaInversa[clave - 1][i];
+                for (int k = clave - 2; k > 0; k--)
                 {
-                    MensajeDescodificado += CadenaInversa[k][(2 * i)+1];
+                    MensajeDescodificado += CadenaInversa[k][(2 * i) + 1];
                 }
             }
+            MensajeDescodificado = MensajeDescodificado.Replace("$" , string.Empty);
             return MensajeDescodificado;
         }
         void SepararMensajeD(object cadena, int clave) 

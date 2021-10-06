@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LibreriaCifrados;
 
 namespace Laboratorio4.Controllers
 {
@@ -19,6 +20,9 @@ namespace Laboratorio4.Controllers
         {
             this.fistenviroment = enviroment;
         }
+
+        CifradoDeCesar CifCesar = new CifradoDeCesar();
+        CifradoZigZag CifZigZag = new CifradoZigZag();
 
         [Route("api/cipher/zz/{Clave}")]
         [HttpPost]
@@ -34,7 +38,16 @@ namespace Laboratorio4.Controllers
             object Lectura = Archivo(file);
             return Ok();
         }
-            public object Archivo(IFormFile file)
+
+        [Route("api/decipher/csr/{Clave}")]
+        [HttpPost]
+        public IActionResult DecifrarCesar([FromForm] IFormFile file, string clave) 
+        {
+            return Ok();
+        }
+
+
+        public object Archivo(IFormFile file)
         {
             string uploadsFolder = null;
             object aCifrar=default;
