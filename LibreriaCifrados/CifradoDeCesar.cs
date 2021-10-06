@@ -10,10 +10,12 @@ namespace LibreriaCifrados
     {
         protected Hashtable InitialDiccionary = new Hashtable();
         protected Hashtable NewDiccionary = new Hashtable();
+        protected Hashtable LetraDiccionary = new Hashtable();
+
 
         public void CreateDiccionary() 
         {
-            for (byte i = 33; i <= 126; i++) 
+            for (byte i = 32; i <= 126; i++) 
             {
                 InitialDiccionary.Add(i, (char)i);
             }
@@ -24,22 +26,52 @@ namespace LibreriaCifrados
             byte[] Composition = Encoding.ASCII.GetBytes(key);
             byte[] NewKey = Composition.Distinct().ToArray();
             int Long = NewKey.Length;
-            byte FirstValue = 33;
+            byte FirstValue = 32;
             for (int i = Long-1; i >= 0; i--) 
             {
                 InitialDiccionary[NewKey[i]] = '¬';
             }
-            for (int i = 0; i >= Long; i++) 
+
+            for (int i = 0; i < Long; i++) 
             {
                 NewDiccionary.Add(FirstValue,(char)NewKey[i]);
                 FirstValue++;
             }
-            for (byte i = 33; i<=126; i++) 
+
+            for (byte i = 32; i<=126; i++) 
             {
                 char Aux = (char)InitialDiccionary[i];
                 if (Aux != '¬') 
                 {
                     NewDiccionary.Add(FirstValue,Aux);
+                    FirstValue++;
+                }
+            }
+        }
+
+        void CreateNewLetraDiccionary(string key)
+        {
+            byte[] Composition = Encoding.ASCII.GetBytes(key);
+            byte[] NewKey = Composition.Distinct().ToArray();
+            int Long = NewKey.Length;
+            byte FirstValue = 32;
+            for (int i = Long-1; i >= 0; i--) 
+            {
+                InitialDiccionary[NewKey[i]] = '¬';
+            }
+
+            for (int i = 0; i < Long; i++)
+            {
+                LetraDiccionary.Add((char)NewKey[i], FirstValue);
+                FirstValue++;
+            }
+
+            for (byte i = 32; i <= 126; i++)
+            {
+                char Aux = (char)InitialDiccionary[i];
+                if (Aux != '¬')
+                {
+                    LetraDiccionary.Add(Aux, FirstValue);
                     FirstValue++;
                 }
             }
@@ -65,14 +97,17 @@ namespace LibreriaCifrados
         public string Decrypt(object Cadena, string Key) 
         {
             CreateDiccionary();
-            string Archivo = Convert.ToString(Cadena);
-            byte[] Traducir = Encoding.ASCII.GetBytes(Archivo);
-            int LongitudArchivo = Traducir.Length;
-            CreateNewDiccionary(Key);
+            string ObjString = (string)Cadena;
+            char[] Aux = ObjString.ToCharArray();
+            int LongitudArchivo = Aux.Length;
+            CreateNewLetraDiccionary(Key);
+            InitialDiccionary.Clear();
+            CreateDiccionary();
             string NewArchivo = "";
             for (int i = 0; i < LongitudArchivo; i++)
             {
-                NewArchivo += NewDiccionary[Traducir[i]];
+                byte Suport = (byte)LetraDiccionary[Aux[i]];
+                NewArchivo += InitialDiccionary[Suport];
             }
             NewDiccionary.Clear();
             InitialDiccionary.Clear();
