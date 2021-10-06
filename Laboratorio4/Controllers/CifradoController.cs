@@ -25,9 +25,9 @@ namespace Laboratorio4.Controllers
         CifradoDeCesar CifCesar = new CifradoDeCesar();
         CifradoZigZag CifZigZag = new CifradoZigZag();
 
-        [Route("api/cipher/zz/{Clave}")]//Cifrado ZigZag
+        [Route("api/cipher/zz")]//Cifrado ZigZag
         [HttpPost]
-        public IActionResult ZizZag([FromForm] IFormFile file, int clave)
+        public IActionResult ZizZag([FromForm] IFormFile file, [FromForm] string key)
         {
             object Lectura = Archivo(file, 1);
             string mensaje = Lectura.ToString();
@@ -43,7 +43,7 @@ namespace Laboratorio4.Controllers
             {
                 if (!String.IsNullOrEmpty(cadenas[i]))
                 {
-                    Linea += CifZigZag.EncryptZZ(cadenas[i].ToString(), clave) + "\r\n";
+                    Linea += CifZigZag.EncryptZZ(cadenas[i].ToString(), Convert.ToInt32(key)) + "\r\n";
                 }
             }
 
@@ -52,9 +52,9 @@ namespace Laboratorio4.Controllers
 
             return Ok("El archivo se creo exitosamente, se guardo en la carpeta UploadCifrados del Laboratorio");
         }
-        [Route("api/cipher/csr/{Clave}")]
+        [Route("api/cipher/csr")]
         [HttpPost]
-        public IActionResult Cesar([FromForm] IFormFile file, string clave)
+        public IActionResult Cesar([FromForm] IFormFile file, [FromForm] string key)
         {
             object Lectura = Archivo(file, 1);
             string mensaje = Lectura.ToString();
@@ -70,7 +70,7 @@ namespace Laboratorio4.Controllers
             {
                 if (!String.IsNullOrEmpty(cadenas[i]))
                 {
-                    Linea += CifCesar.Encrypt(cadenas[i].ToString(), clave) + "\r\n";
+                    Linea += CifCesar.Encrypt(cadenas[i].ToString(), key) + "\r\n";
                 }
             }
 
@@ -80,9 +80,9 @@ namespace Laboratorio4.Controllers
             return Ok("El archivo se creo exitosamente, se guardo en la carpeta UploadCifrados del Laboratorio");
         }
 
-        [Route("api/decipher/{Clave}")]
+        [Route("api/decipher")]
         [HttpPost]
-        public IActionResult DecifrarCesar([FromForm] IFormFile file, string clave) 
+        public IActionResult DecifrarCesar([FromForm] IFormFile file, [FromForm] string key) 
         {
             object Lectura = Archivo(file,2);
             string mensaje = Lectura.ToString();
@@ -100,7 +100,7 @@ namespace Laboratorio4.Controllers
                 {
                     if (!String.IsNullOrEmpty(cadenas[i]))
                     {
-                        Linea += CifZigZag.Decrypt(cadenas[i].ToString(), Convert.ToInt32(clave)) + "\r\n";
+                        Linea += CifZigZag.Decrypt(cadenas[i].ToString(), Convert.ToInt32(key)) + "\r\n";
                     }
                 }
                 using (StreamWriter outFile = new StreamWriter(direccionNuevo))
@@ -114,7 +114,7 @@ namespace Laboratorio4.Controllers
                 {
                     if (!String.IsNullOrEmpty(cadenas[i]))
                     {
-                        Linea += CifCesar.Decrypt(cadenas[i].ToString(), clave) + "\r\n";
+                        Linea += CifCesar.Decrypt(cadenas[i].ToString(), key) + "\r\n";
                     }
                 }
                 using (StreamWriter outFile = new StreamWriter(direccionNuevo))
