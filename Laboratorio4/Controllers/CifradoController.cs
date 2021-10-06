@@ -29,7 +29,7 @@ namespace Laboratorio4.Controllers
         [HttpPost]
         public IActionResult ZizZag([FromForm] IFormFile file, int clave)
         {
-            object Lectura = Archivo(file);
+            object Lectura = Archivo(file, 1);
             string mensaje = Lectura.ToString();
             string[] cadenas = Regex.Split(mensaje, "[\r\n]+");
             int ciclo = cadenas.Length;
@@ -56,7 +56,7 @@ namespace Laboratorio4.Controllers
         [HttpPost]
         public IActionResult Cesar([FromForm] IFormFile file, string clave)
         {
-            object Lectura = Archivo(file);
+            object Lectura = Archivo(file, 1);
             string mensaje = Lectura.ToString();
             string[] cadenas = Regex.Split(mensaje, "[\r\n]+");
             int ciclo = cadenas.Length;
@@ -84,7 +84,7 @@ namespace Laboratorio4.Controllers
         [HttpPost]
         public IActionResult DecifrarCesar([FromForm] IFormFile file, string clave) 
         {
-            object Lectura = Archivo(file);
+            object Lectura = Archivo(file,2);
             string mensaje = Lectura.ToString();
             string[] cadenas = Regex.Split(mensaje, "[\r\n]+");
             int ciclo = cadenas.Length;
@@ -128,7 +128,7 @@ namespace Laboratorio4.Controllers
             }
         }
 
-        public object Archivo(IFormFile file)
+        public object Archivo(IFormFile file, int num)
         {
             string uploadsFolder = null;
             object aCifrar=default;
@@ -136,7 +136,14 @@ namespace Laboratorio4.Controllers
 
             if (file!=null)
             {
-                uploadsFolder = Path.Combine(fistenviroment.ContentRootPath, "Upload");
+                if (num==1)
+                {
+                    uploadsFolder = Path.Combine(fistenviroment.ContentRootPath, "Upload");
+                }
+                else
+                {
+                    uploadsFolder = Path.Combine(fistenviroment.ContentRootPath, "UploadCifrados");
+                }
                 string filepath = Path.Combine(uploadsFolder, file.FileName);
                 if (!System.IO.File.Exists(filepath))
                 {
@@ -151,5 +158,7 @@ namespace Laboratorio4.Controllers
             }
             return aCifrar;
         }
+
+
     }
 }
