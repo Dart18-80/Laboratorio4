@@ -7,6 +7,7 @@ namespace LibreriaCifrados
     public class CifradoZigZag
     {
         protected List<string[]> CadenaOlas = new List<string[]>();
+        protected List<string[]> CadenaInversa = new List<string[]>();
 
         void CrearDiccionario(object mensaje, int Lonclave) 
         {
@@ -70,7 +71,72 @@ namespace LibreriaCifrados
             }
             return TextoCifrado;
         }
+        public string Decrypt(object cadena, int clave) 
+        {
+            string cad = cadena.ToString();
+            int LongOla = 2 + 2 * (clave - 2);//la cantidad de caracteres de una ola
+            int NumOlas = cad.Length / LongOla;
 
+            SepararMensajeD(cadena, clave);
+
+            string MensajeDescodificado = default;
+
+            for (int i = 0; i < NumOlas; i++)
+            {
+                MensajeDescodificado += CadenaInversa[0][i];
+                for (int j = 1; j < clave-1; j++)
+                {
+                    MensajeDescodificado += CadenaInversa[j][2 * i];
+                }
+                MensajeDescodificado += CadenaInversa[clave-1][i];
+                for (int k = clave-2; k > 0; k--)
+                {
+                    MensajeDescodificado += CadenaInversa[k][(2 * i)+1];
+                }
+            }
+            return MensajeDescodificado;
+        }
+        void SepararMensajeD(object cadena, int clave) 
+        {
+            string cad = cadena.ToString();
+            int LongOla = 2 + 2 * (clave - 2);//la cantidad de caracteres de una ola
+            int NumOlas =cad.Length/LongOla;//cuantas olas hay en total
+            char[] mensaje = cad.ToCharArray();
+            CadenaInversa.Clear();
+            string[] MensajeSeparado = new string[2 * NumOlas];
+
+            int cont = 0;
+            for (int i = 0; i < clave; i++)
+            {
+                MensajeSeparado = new string[2 * NumOlas];
+                if (i == 0)
+                {
+                    for (int j = 0; j < NumOlas; j++)
+                    {
+                        MensajeSeparado[j] = mensaje[j].ToString();
+                        cont++;
+                    }
+                    CadenaInversa.Add(MensajeSeparado);
+                }
+                else if (i == clave-1)
+                {
+                    for (int j = 0; j < NumOlas; j++)
+                    {
+                        MensajeSeparado[j] = mensaje[cont+j].ToString();
+                    }
+                    CadenaInversa.Add(MensajeSeparado);
+                }
+                else
+                {
+                    for (int j = 0; j < NumOlas * 2; j++)
+                    {
+                        MensajeSeparado[j] = mensaje[cont + j].ToString();
+                    }
+                    cont += NumOlas * 2;
+                    CadenaInversa.Add(MensajeSeparado);
+                }
+            }
+        }
         public object LlenadoText(object mensaje, int clave) 
         {
             int LongitudObj = (Convert.ToString(mensaje).Length) % clave;
