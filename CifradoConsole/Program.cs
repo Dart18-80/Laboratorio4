@@ -37,7 +37,9 @@ namespace CifradoConsole
 
                     object aCifrar = Texto;
 
-                    CifZigZag.EncryptZZ(aCifrar, Clave);
+                    string MensajeEncriptado=CifZigZag.EncryptZZ(aCifrar, Clave);
+                    Console.WriteLine(MensajeEncriptado);
+                    Console.ReadLine();
                 }
                 else if(numero==2)
                 {
@@ -49,7 +51,7 @@ namespace CifradoConsole
 
                     object aCifrar = Texto;
                     string MensajeCifrado=CifCesar.Encrypt(aCifrar, Clave);
-                    string MensajeCifrados = CifCesar.Decrypt(aCifrar, Clave);
+                    string Mensajedecifrado = CifCesar.Decrypt(MensajeCifrado, Clave);
 
 
                 }
