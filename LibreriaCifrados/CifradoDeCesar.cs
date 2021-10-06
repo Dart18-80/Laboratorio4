@@ -29,7 +29,7 @@ namespace LibreriaCifrados
             byte FirstValue = 0;
             for (int i = Long-1; i >= 0; i--) 
             {
-                InitialDiccionary[NewKey[i]] = '¬';
+                InitialDiccionary[NewKey[i]] = "¬¬";
             }
 
             for (int i = 0; i < Long; i++) 
@@ -40,8 +40,8 @@ namespace LibreriaCifrados
 
             for (byte i = 0; i<=250; i++) 
             {
-                char Aux = (char)InitialDiccionary[i];
-                if (Aux != '¬') 
+                string Aux = (string)InitialDiccionary[i];
+                if (Aux != "¬¬") 
                 {
                     NewDiccionary.Add(FirstValue,Aux);
                     FirstValue++;
@@ -57,7 +57,7 @@ namespace LibreriaCifrados
             byte FirstValue = 0;
             for (int i = Long-1; i >= 0; i--) 
             {
-                InitialDiccionary[NewKey[i]] = '¬';
+                InitialDiccionary[NewKey[i]] = "¬¬";
             }
 
             for (int i = 0; i < Long; i++)
@@ -68,8 +68,8 @@ namespace LibreriaCifrados
 
             for (byte i = 0; i <= 250; i++)
             {
-                char Aux = (char)InitialDiccionary[i];
-                if (Aux != '¬')
+                string Aux = (string)InitialDiccionary[i];
+                if (Aux != "¬¬")
                 {
                     LetraDiccionary.Add(Aux, FirstValue);
                     FirstValue++;
