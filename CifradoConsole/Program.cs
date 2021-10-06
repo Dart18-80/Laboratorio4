@@ -57,7 +57,16 @@ namespace CifradoConsole
                 }
                 else if (numero==3)
                 {
+                    Console.WriteLine("Ingrese el Texto que desea decifrar");
+                    string Texto = Convert.ToString(Console.ReadLine());
 
+
+                    Console.WriteLine("Ingrese la Clave del Texto");
+                    int Clave = Convert.ToInt32(Console.ReadLine());
+
+                    object aCifrar = Texto;
+
+                    string MensajeEncriptado = CifZigZag.Decrypt(aCifrar, Clave);
                 }
                 else if (numero==4)
                 {
