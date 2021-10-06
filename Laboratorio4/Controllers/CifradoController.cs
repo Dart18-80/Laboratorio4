@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LibreriaCifrados;
+using System.Text.RegularExpressions;
 
 namespace Laboratorio4.Controllers
 {
@@ -20,21 +22,113 @@ namespace Laboratorio4.Controllers
             this.fistenviroment = enviroment;
         }
 
-        [Route("api/cipher/zz/{Clave}")]
+        CifradoDeCesar CifCesar = new CifradoDeCesar();
+        CifradoZigZag CifZigZag = new CifradoZigZag();
+
+        [Route("api/cipher/zz/{Clave}")]//Cifrado ZigZag
         [HttpPost]
-        public IActionResult ZizZag([FromForm] IFormFile file, string clave)
+        public IActionResult ZizZag([FromForm] IFormFile file, int clave)
         {
-            object Lectura = Archivo(file);
-            return Ok();
+            object Lectura = Archivo(file, 1);
+            string mensaje = Lectura.ToString();
+            string[] cadenas = Regex.Split(mensaje, "[\r\n]+");
+            int ciclo = cadenas.Length;
+            string Linea = default;
+
+            string uploadsNewFolder = Path.Combine(fistenviroment.ContentRootPath, "UploadCifrados");
+            string nom=Convert.ToString(file.FileName).Replace(".txt", string.Empty);
+            string direccionNuevo = Path.Combine(uploadsNewFolder, nom + ".zz");
+
+            for (int i = 0; i < ciclo; i++)
+            {
+                if (!String.IsNullOrEmpty(cadenas[i]))
+                {
+                    Linea += CifZigZag.EncryptZZ(cadenas[i].ToString(), clave) + "\r\n";
+                }
+            }
+
+            using (StreamWriter outFile = new StreamWriter(direccionNuevo))
+                outFile.WriteLine(Linea);
+
+            return Ok("El archivo se creo exitosamente, se guardo en la carpeta UploadCifrados del Laboratorio");
         }
         [Route("api/cipher/csr/{Clave}")]
         [HttpPost]
         public IActionResult Cesar([FromForm] IFormFile file, string clave)
         {
-            object Lectura = Archivo(file);
-            return Ok();
+            object Lectura = Archivo(file, 1);
+            string mensaje = Lectura.ToString();
+            string[] cadenas = Regex.Split(mensaje, "[\r\n]+");
+            int ciclo = cadenas.Length;
+            string Linea = default;
+
+            string uploadsNewFolder = Path.Combine(fistenviroment.ContentRootPath, "UploadCifrados");
+            string nom = Convert.ToString(file.FileName).Replace(".txt", string.Empty);
+            string direccionNuevo = Path.Combine(uploadsNewFolder, nom + ".csr");
+
+            for (int i = 0; i < ciclo; i++)
+            {
+                if (!String.IsNullOrEmpty(cadenas[i]))
+                {
+                    Linea += CifCesar.Encrypt(cadenas[i].ToString(), clave) + "\r\n";
+                }
+            }
+
+            using (StreamWriter outFile = new StreamWriter(direccionNuevo))
+                outFile.WriteLine(Linea);
+
+            return Ok("El archivo se creo exitosamente, se guardo en la carpeta UploadCifrados del Laboratorio");
         }
-            public object Archivo(IFormFile file)
+
+        [Route("api/decipher/{Clave}")]
+        [HttpPost]
+        public IActionResult DecifrarCesar([FromForm] IFormFile file, string clave) 
+        {
+            object Lectura = Archivo(file,2);
+            string mensaje = Lectura.ToString();
+            string[] cadenas = Regex.Split(mensaje, "[\r\n]+");
+            int ciclo = cadenas.Length;
+            string Linea = default;
+            string[] extencion = file.FileName.Split('.');
+
+            string uploadsNewFolder = Path.Combine(fistenviroment.ContentRootPath, "Upload");
+            string direccionNuevo = Path.Combine(uploadsNewFolder, extencion[0] +"DES"+ ".txt");
+
+            if (extencion[1] == "zz")
+            {
+                for (int i = 0; i < ciclo; i++)
+                {
+                    if (!String.IsNullOrEmpty(cadenas[i]))
+                    {
+                        Linea += CifZigZag.Decrypt(cadenas[i].ToString(), Convert.ToInt32(clave)) + "\r\n";
+                    }
+                }
+                using (StreamWriter outFile = new StreamWriter(direccionNuevo))
+                    outFile.WriteLine(Linea);
+
+                return Ok("El archivo se creo exitosamente, se guardo en la carpeta UploadCifrados del Laboratorio");
+            }
+            else if (extencion[1] == "csr")
+            {
+                for (int i = 0; i < ciclo; i++)
+                {
+                    if (!String.IsNullOrEmpty(cadenas[i]))
+                    {
+                        Linea += CifCesar.Decrypt(cadenas[i].ToString(), clave) + "\r\n";
+                    }
+                }
+                using (StreamWriter outFile = new StreamWriter(direccionNuevo))
+                    outFile.WriteLine(Linea);
+
+                return Ok("El archivo se creo exitosamente, se guardo en la carpeta UploadCifrados del Laboratorio");
+            }
+            else
+            {
+                return StatusCode(500);
+            }
+        }
+
+        public object Archivo(IFormFile file, int num)
         {
             string uploadsFolder = null;
             object aCifrar=default;
@@ -42,7 +136,14 @@ namespace Laboratorio4.Controllers
 
             if (file!=null)
             {
-                uploadsFolder = Path.Combine(fistenviroment.ContentRootPath, "Upload");
+                if (num==1)
+                {
+                    uploadsFolder = Path.Combine(fistenviroment.ContentRootPath, "Upload");
+                }
+                else
+                {
+                    uploadsFolder = Path.Combine(fistenviroment.ContentRootPath, "UploadCifrados");
+                }
                 string filepath = Path.Combine(uploadsFolder, file.FileName);
                 if (!System.IO.File.Exists(filepath))
                 {
@@ -57,5 +158,7 @@ namespace Laboratorio4.Controllers
             }
             return aCifrar;
         }
+
+
     }
 }

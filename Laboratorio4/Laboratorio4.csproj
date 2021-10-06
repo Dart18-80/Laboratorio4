@@ -1,17 +1,31 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Helpers\" />
-    <Folder Include="Models\" />
+    <Compile Remove="Helpers\**" />
+    <Compile Remove="Models\**" />
+    <Content Remove="Helpers\**" />
+    <Content Remove="Models\**" />
+    <EmbeddedResource Remove="Helpers\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <None Remove="Helpers\**" />
+    <None Remove="Models\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="UploadCifrados\" />
     <Folder Include="Upload\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LibreriaCifrados\LibreriaCifrados.csproj" />
   </ItemGroup>
 
 

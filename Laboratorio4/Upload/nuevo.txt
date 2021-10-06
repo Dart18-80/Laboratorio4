@@ -1,2 +1,0 @@
-Por esto, el caso especial ocurre cuando el 
-substring empieza y termina con el mismo caracter

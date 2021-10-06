@@ -91,6 +91,7 @@ namespace LibreriaCifrados
             }
             NewDiccionary.Clear();
             InitialDiccionary.Clear();
+            LetraDiccionary.Clear();
             return NewArchivo;
         }
 
@@ -111,6 +112,7 @@ namespace LibreriaCifrados
             }
             NewDiccionary.Clear();
             InitialDiccionary.Clear();
+            LetraDiccionary.Clear();
             return NewArchivo;
         }
     }

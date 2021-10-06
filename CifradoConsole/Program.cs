@@ -67,6 +67,8 @@ namespace CifradoConsole
                     object aCifrar = Texto;
 
                     string MensajeEncriptado = CifZigZag.Decrypt(aCifrar, Clave);
+                    Console.WriteLine(MensajeEncriptado);
+                    Console.ReadLine();
                 }
                 else if (numero==4)
                 {
