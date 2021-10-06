@@ -49,7 +49,7 @@ namespace CifradoConsole
 
                     object aCifrar = Texto;
                     string MensajeCifrado=CifCesar.Encrypt(aCifrar, Clave);
-                    string MensajeCifrados = CifCesar.Decrypt(aCifrar, Clave);
+                    string MensajeCifrados = CifCesar.Decrypt(MensajeCifrado, Clave);
 
 
                 }
