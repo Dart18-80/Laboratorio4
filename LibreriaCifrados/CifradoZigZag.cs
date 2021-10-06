@@ -40,7 +40,8 @@ namespace LibreriaCifrados
             int LongOla = 2 + 2 * (key - 2);
             string mensaje = LlenadoText(cadena.ToString(), LongOla).ToString();
             int CantOlas = mensaje.Length / LongOla;
-
+            CadenaOlas.Clear();
+            CadenaInversa.Clear();
             CrearDiccionario(cadena, LongOla);
 
             string TextoCifrado = default;
@@ -143,12 +144,13 @@ namespace LibreriaCifrados
         {
             int LongitudObj = (Convert.ToString(mensaje).Length) % clave;
             int Agregar = clave - LongitudObj;
-
-            for (int i = 0; i < Agregar; i++)
+            if (LongitudObj != 0)
             {
-                mensaje+="$";
+                for (int i = 0; i < Agregar; i++)
+                {
+                    mensaje += "$";
+                }
             }
-
             return mensaje;
         }
 
