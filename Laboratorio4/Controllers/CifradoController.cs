@@ -60,7 +60,7 @@ namespace Laboratorio4.Controllers
             string mensaje = Lectura.ToString();
             string[] cadenas = Regex.Split(mensaje, "[\r\n]+");
             int ciclo = cadenas.Length;
-            string Linea = default;
+            byte[] Linea;
 
             string uploadsNewFolder = Path.Combine(fistenviroment.ContentRootPath, "UploadCifrados");
             string nom = Convert.ToString(file.FileName).Replace(".txt", string.Empty);

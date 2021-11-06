@@ -15,38 +15,15 @@ namespace LibreriaCifrados
 
         public void CreateDiccionary() 
         {
-            for (byte i = 32; i <= 126; i++) 
+            for (byte i = 0; i <= 255; i++) 
             {
                 InitialDiccionary.Add(i, i);
             }
         }
 
-        void CreateNewDiccionary(string key)
+        void CreateNewDiccionary(byte[] key)
         {
-            byte[] Composition = Encoding.ASCII.GetBytes(key);
-            byte[] NewKey = Composition.Distinct().ToArray();
-            int Long = NewKey.Length;
-            byte FirstValue = 32;
-            for (int i = Long-1; i >= 0; i--) 
-            {
-                InitialDiccionary[NewKey[i]] = '¬';
-            }
 
-            for (int i = 0; i < Long; i++) 
-            {
-                NewDiccionary.Add(FirstValue,(char)NewKey[i]);
-                FirstValue++;
-            }
-
-            for (byte i = 32; i<=126; i++) 
-            {
-                char Aux = (char)InitialDiccionary[i];
-                if (Aux != '¬') 
-                {
-                    NewDiccionary.Add(FirstValue,Aux);
-                    FirstValue++;
-                }
-            }
         }
 
         void CreateNewLetraDiccionary(string key)
