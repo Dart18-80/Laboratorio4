@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -9,88 +10,139 @@ namespace LibreriaCifrados
     public class CifradoDeCesar
     {
         protected Hashtable InitialDiccionary = new Hashtable();
-        protected Hashtable NewDiccionary = new Hashtable();
-        protected Hashtable LetraDiccionary = new Hashtable();
-
-
-        public void CreateDiccionary() 
-        {
-            for (byte i = 0; i <= 255; i++) 
-            {
-                InitialDiccionary.Add(i, i);
-            }
-        }
+        protected Hashtable DescifrarDiccionary = new Hashtable();
 
         void CreateNewDiccionary(byte[] key)
         {
+            if (key != null) 
+            {
+                byte Contador = 0;
+                byte CorrerByte = 0;
+                for (long i = 0; i < key.Length; i++) 
+                {
+                    InitialDiccionary[Contador] = key[i];
+                    DescifrarDiccionary[key[i]] = Contador;
+                    Contador++;
+                }
+                while (Contador <= 255) 
+                {
+                    if (Saltar(Contador, key) == false)
+                    {
+                        InitialDiccionary[Contador] = CorrerByte;
+                        DescifrarDiccionary[CorrerByte] = Contador;
+                    }
+                    else 
+                    {
+                        CorrerByte++;
+                        InitialDiccionary[Contador] = CorrerByte;
+                        DescifrarDiccionary[CorrerByte] = Contador;
+                    }
+                    Contador++;
+                    CorrerByte++;
+                }
 
+            }
         }
 
-        void CreateNewLetraDiccionary(string key)
+        bool Saltar(byte Contador, byte[] key) 
         {
-            byte[] Composition = Encoding.ASCII.GetBytes(key);
-            byte[] NewKey = Composition.Distinct().ToArray();
-            int Long = NewKey.Length;
-            byte FirstValue = 32;
-            for (int i = Long-1; i >= 0; i--) 
+            for (long i = 0; i < key.Length; i++)
             {
-                InitialDiccionary[NewKey[i]] = '¬';
-            }
-
-            for (int i = 0; i < Long; i++)
-            {
-                LetraDiccionary.Add((char)NewKey[i], FirstValue);
-                FirstValue++;
-            }
-
-            for (byte i = 32; i <= 126; i++)
-            {
-                char Aux = (char)InitialDiccionary[i];
-                if (Aux != '¬')
+                if (Contador == key[i])
                 {
-                    LetraDiccionary.Add(Aux, FirstValue);
-                    FirstValue++;
+                    return true;
+                }
+            }
+            return false;
+        }
+        public void Encrypt(string Key, string ArchivoNuevo, string ArchivoCifrado)
+        {
+            int contador = 0;
+            long Caracteres = 0;
+            byte[] Arreglo = new byte[12000000];
+            byte[] Nuevo = new byte[12000000];
+
+            using (Stream Text = new FileStream(ArchivoNuevo, FileMode.OpenOrCreate, FileAccess.Read))
+            {
+                Caracteres = Text.Length;
+            }
+            using (BinaryReader reader = new BinaryReader(File.Open(ArchivoNuevo, FileMode.Open)))
+            {
+                foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
+                {
+
+                    Arreglo[contador] = nuevo;
+                    contador++;
+                }
+            }
+
+            string[] KeyChar = Key.Split();
+            byte[] KeyByte = new byte[KeyChar.Length-1];
+            for (long i = 0; i < KeyChar.Length; i++) 
+            {
+                KeyByte[i] = Convert.ToByte(KeyChar[i]);
+            }
+
+            CreateNewDiccionary(KeyByte);
+
+            for (int i = 0; i<contador; i++) 
+            {
+                Nuevo[i] = (byte)InitialDiccionary[Arreglo[i]];
+            }
+
+
+            using (BinaryWriter writer = new BinaryWriter(File.Open(ArchivoCifrado, FileMode.Create)))
+            {
+                for (int i = 0; i < contador; i++)
+                {
+                    writer.Write(Nuevo[i]);
                 }
             }
         }
 
-        public string Encrypt(object Cadena, string Key)
+        public void Decrypt(string Key, string ArchivoCifrado, string ArchivoDescifrado) 
         {
-            CreateDiccionary();
-            string Archivo = Convert.ToString(Cadena);
-            byte[] Traducir = Encoding.ASCII.GetBytes(Archivo);
-            int LongitudArchivo = Traducir.Length;
-            CreateNewDiccionary(Key);
-            string NewArchivo = "";
-            for (int i = 0; i < LongitudArchivo; i++) 
-            {
-                NewArchivo += NewDiccionary[Traducir[i]];
-            }
-            NewDiccionary.Clear();
-            InitialDiccionary.Clear();
-            LetraDiccionary.Clear();
-            return NewArchivo;
-        }
+            int contador = 0;
+            long Caracteres = 0;
+            byte[] Arreglo = new byte[12000000];
+            byte[] Nuevo = new byte[12000000];
 
-        public string Decrypt(object Cadena, string Key) 
-        {
-            CreateDiccionary();
-            string ObjString = (string)Cadena;
-            char[] Aux = ObjString.ToCharArray();
-            int LongitudArchivo = Aux.Length;
-            CreateNewLetraDiccionary(Key);
-            InitialDiccionary.Clear();
-            CreateDiccionary();
-            string NewArchivo = "";
-            for (int i = 0; i < LongitudArchivo; i++)
+            using (Stream Text = new FileStream(ArchivoCifrado, FileMode.OpenOrCreate, FileAccess.Read))
             {
-                byte Suport = (byte)LetraDiccionary[Aux[i]];
-                NewArchivo += InitialDiccionary[Suport];
+                Caracteres = Text.Length;
             }
-            NewDiccionary.Clear();
-            InitialDiccionary.Clear();
-            LetraDiccionary.Clear();
-            return NewArchivo;
+            using (BinaryReader reader = new BinaryReader(File.Open(ArchivoCifrado, FileMode.Open)))
+            {
+                foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
+                {
+
+                    Arreglo[contador] = nuevo;
+                    contador++;
+                }
+            }
+
+            string[] KeyChar = Key.Split();
+            byte[] KeyByte = new byte[KeyChar.Length - 1];
+            for (long i = 0; i < KeyChar.Length; i++)
+            {
+                KeyByte[i] = Convert.ToByte(KeyChar[i]);
+            }
+
+            CreateNewDiccionary(KeyByte);
+
+            for (int i = 0; i < contador; i++)
+            {
+                Nuevo[i] = (byte)DescifrarDiccionary[Arreglo[i]];
+            }
+
+
+            using (BinaryWriter writer = new BinaryWriter(File.Open(ArchivoDescifrado, FileMode.Create)))
+            {
+                for (int i = 0; i < contador; i++)
+                {
+                    writer.Write(Nuevo[i]);
+                }
+            }
         }
     }
 }

@@ -55,26 +55,24 @@ namespace Laboratorio4.Controllers
         [HttpPost]
         public IActionResult Cesar([FromForm] IFormFile file, [FromForm] string key)
         {
-            object Lectura = Archivo(file, 1);
-            string mensaje = Lectura.ToString();
-            string[] cadenas = Regex.Split(mensaje, "[\r\n]+");
-            int ciclo = cadenas.Length;
-            byte[] Linea;
-
-            string uploadsNewFolder = Path.Combine(fistenviroment.ContentRootPath, "UploadCifrados");
-            string nom = Convert.ToString(file.FileName).Replace(".txt", string.Empty);
-            string direccionNuevo = Path.Combine(uploadsNewFolder, nom + ".csr");
-
-            for (int i = 0; i < ciclo; i++)
+            string uploadsFolder = Path.Combine(fistenviroment.ContentRootPath, "Upload");
+            string filepath = Path.Combine(uploadsFolder, file.FileName);
+            if (!System.IO.File.Exists(filepath))
             {
-                if (!String.IsNullOrEmpty(cadenas[i]))
+                using (var INeadLearn = new FileStream(filepath, FileMode.CreateNew))
                 {
-                    Linea += CifCesar.Encrypt(cadenas[i].ToString(), key) + "\r\n";
+                    file.CopyTo(INeadLearn);
                 }
             }
 
-            using (StreamWriter outFile = new StreamWriter(direccionNuevo))
-                outFile.WriteLine(Linea);
+            string uploadsNewFolder = Path.Combine(fistenviroment.ContentRootPath, "UploadCifrados");
+            string nom = Convert.ToString(file.FileName).Replace(".txt", string.Empty);
+            string direccionNuevo = Path.Combine(uploadsNewFolder, nom + ".zz");
+            System.IO.File.WriteAllLines(direccionNuevo, new string[0]);
+
+            CifCesar.Encrypt(key, filepath, direccionNuevo);
+
+
 
             return Ok("El archivo se creo exitosamente, se guardo en la carpeta UploadCifrados del Laboratorio");
         }
