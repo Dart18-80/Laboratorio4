@@ -67,7 +67,7 @@ namespace Laboratorio4.Controllers
 
             string uploadsNewFolder = Path.Combine(fistenviroment.ContentRootPath, "UploadCifrados");
             string nom = Convert.ToString(file.FileName).Replace(".txt", string.Empty);
-            string direccionNuevo = Path.Combine(uploadsNewFolder, nom + ".zz");
+            string direccionNuevo = Path.Combine(uploadsNewFolder, nom + ".csr");
             System.IO.File.WriteAllLines(direccionNuevo, new string[0]);
 
             CifCesar.Encrypt(key, filepath, direccionNuevo);
@@ -112,16 +112,7 @@ namespace Laboratorio4.Controllers
             }
             else if (extencion[1] == "csr")
             {
-                for (int i = 0; i < ciclo; i++)
-                {
-                    if (!String.IsNullOrEmpty(cadenas[i]))
-                    {
-                        Linea += CifCesar.Decrypt(cadenas[i].ToString(), key) + "\r\n";
-                    }
-                }
-                using (StreamWriter outFile = new StreamWriter(direccionNuevo))
-                    outFile.WriteLine(Linea);
-
+                CifCesar.Decrypt(key, filepath, direccionNuevo);
                 return Ok("El archivo se creo exitosamente, se guardo en la carpeta UploadCifrados del Laboratorio");
             }
             else
