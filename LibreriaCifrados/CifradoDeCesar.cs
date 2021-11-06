@@ -17,7 +17,7 @@ namespace LibreriaCifrados
         {
             for (byte i = 32; i <= 126; i++) 
             {
-                InitialDiccionary.Add(i, (char)i);
+                InitialDiccionary.Add(i, i);
             }
         }
 
