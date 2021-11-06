@@ -29,26 +29,25 @@ namespace Laboratorio4.Controllers
         [HttpPost]
         public IActionResult ZizZag([FromForm] IFormFile file, [FromForm] string key)
         {
-            object Lectura = Archivo(file, 1);
-            string mensaje = Lectura.ToString();
-            string[] cadenas = Regex.Split(mensaje, "[\r\n]+");
-            int ciclo = cadenas.Length;
-            string Linea = default;
+           
+            string uploadsFolder = Path.Combine(fistenviroment.ContentRootPath, "Upload");
+            string filepath = Path.Combine(uploadsFolder, file.FileName);
+                if (!System.IO.File.Exists(filepath))
+                {
+                    using (var INeadLearn = new FileStream(filepath, FileMode.CreateNew))
+                    {
+                        file.CopyTo(INeadLearn);
+                    }
+                }
 
             string uploadsNewFolder = Path.Combine(fistenviroment.ContentRootPath, "UploadCifrados");
             string nom=Convert.ToString(file.FileName).Replace(".txt", string.Empty);
             string direccionNuevo = Path.Combine(uploadsNewFolder, nom + ".zz");
+            System.IO.File.WriteAllLines(direccionNuevo, new string[0]);
 
-            for (int i = 0; i < ciclo; i++)
-            {
-                if (!String.IsNullOrEmpty(cadenas[i]))
-                {
-                    Linea += CifZigZag.EncryptZZ(cadenas[i].ToString(), Convert.ToInt32(key)) + "\r\n";
-                }
-            }
+            CifZigZag.EncryptZZ(filepath, direccionNuevo, Convert.ToInt32(key));
 
-            using (StreamWriter outFile = new StreamWriter(direccionNuevo))
-                outFile.WriteLine(Linea);
+
 
             return Ok("El archivo se creo exitosamente, se guardo en la carpeta UploadCifrados del Laboratorio");
         }
@@ -91,20 +90,25 @@ namespace Laboratorio4.Controllers
             string Linea = default;
             string[] extencion = file.FileName.Split('.');
 
+
+            string uploadsFolder = Path.Combine(fistenviroment.ContentRootPath, "UploadCifrados");
+            string filepath = Path.Combine(uploadsFolder, file.FileName);
+            if (!System.IO.File.Exists(filepath))
+            {
+                using (var INeadLearn = new FileStream(filepath, FileMode.CreateNew))
+                {
+                    file.CopyTo(INeadLearn);
+                }
+            }
+
             string uploadsNewFolder = Path.Combine(fistenviroment.ContentRootPath, "Upload");
             string direccionNuevo = Path.Combine(uploadsNewFolder, extencion[0] +"DES"+ ".txt");
+            System.IO.File.WriteAllLines(direccionNuevo, new string[0]);
+
 
             if (extencion[1] == "zz")
             {
-                for (int i = 0; i < ciclo; i++)
-                {
-                    if (!String.IsNullOrEmpty(cadenas[i]))
-                    {
-                        Linea += CifZigZag.Decrypt(cadenas[i].ToString(), Convert.ToInt32(key)) + "\r\n";
-                    }
-                }
-                using (StreamWriter outFile = new StreamWriter(direccionNuevo))
-                    outFile.WriteLine(Linea);
+                CifZigZag.Decrypt(filepath,direccionNuevo, Convert.ToInt32(key));
 
                 return Ok("El archivo se creo exitosamente, se guardo en la carpeta UploadCifrados del Laboratorio");
             }

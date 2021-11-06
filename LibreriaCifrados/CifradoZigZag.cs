@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -7,125 +8,197 @@ namespace LibreriaCifrados
 {
     public class CifradoZigZag
     {
-        protected List<string[]> CadenaOlas = new List<string[]>();
-        protected List<string[]> CadenaInversa = new List<string[]>();
+        protected List<byte[]> CadenaOlas = new List<byte[]>();
+        protected List<byte[]> CadenaInversa = new List<byte[]>();
 
-        void CrearDiccionario(object mensaje, int Lonclave)
+        void CrearDiccionario(byte[] Mensaje, int Lonclave)
         {
-            int LongitudObj = (Convert.ToString(mensaje).Length) % Lonclave;
+            int LongitudObj = (Mensaje.Length) % Lonclave;
             int NumerodeOlas = default;
             char[] Letra = new char[Lonclave];
 
             if (LongitudObj == 0)//Significa que las olas estan llenas
             {
-                char[] Cad1 = Convert.ToString(mensaje).ToCharArray();
-                NumerodeOlas = Convert.ToString(mensaje).Length / Lonclave;
-                List<string> cadena = new List<string>();
+                NumerodeOlas = Mensaje.Length / Lonclave;
+                List<byte> cadena = new List<byte>();
 
-                for (int i = 0; i < Cad1.Length; i++)
+                for (int i = 0; i < Mensaje.Length; i++)
                 {
-                    cadena.Add(Cad1[i].ToString());
+                    cadena.Add(Mensaje[i]);
                 }
                 CadenaOlas.Clear();
                 LlenarOlas(cadena, Lonclave);
             }
             else
             {
-                CrearDiccionario(LlenadoText(mensaje, Lonclave), Lonclave);
+                CrearDiccionario(LlenadoText(Mensaje, Lonclave), Lonclave);
             }
         }
-
-        public string EncryptZZ(object cadena, int key)
+        public void EncryptZZ(string ArchivoNuevo, string ArchivoCodificado, int key)
         {
             int LongOla = 2 + 2 * (key - 2);
-            string mensaje = LlenadoText(cadena.ToString(), LongOla).ToString();
-            int CantOlas = mensaje.Length / LongOla;
+            int contador = 0;
+            long Caracteres = 0;
+            byte[] Arreglo = new byte[12000000];
+
+            using (Stream Text = new FileStream(ArchivoNuevo, FileMode.OpenOrCreate, FileAccess.Read))
+            {
+                Caracteres = Text.Length;
+            }
+            using (BinaryReader reader = new BinaryReader(File.Open(ArchivoNuevo, FileMode.Open)))
+            {
+                foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
+                {
+
+                    Arreglo[contador] = nuevo;
+                    contador++;
+                }
+            }
+            byte[] ArregloZZ = new byte[contador];
+
+            for (int i = 0; i < contador; i++)
+            {
+                ArregloZZ[i] = Arreglo[i];
+            }
+
+
+            byte[] mensajeCompleto = LlenadoText(ArregloZZ, LongOla);
+            int CantOlas = mensajeCompleto.Length / LongOla;
+
             CadenaOlas.Clear();
             CadenaInversa.Clear();
-            CrearDiccionario(cadena, LongOla);
+            CrearDiccionario(mensajeCompleto, LongOla);
 
-            string TextoCifrado = default;
-
+            List<byte> TextoCifrado = new List<byte>();
             for (int i = 0; i < key; i++)
             {
                 if (i == 0)
                 {
                     for (int j = 0; j < CantOlas; j++)
                     {
-                        TextoCifrado += CadenaOlas[j][0];
+                        TextoCifrado.Add(CadenaOlas[j][0]);
                     }
                 }
                 else if (i == key - 1)
                 {
                     for (int j = 0; j < CantOlas; j++)
                     {
-                        TextoCifrado += CadenaOlas[j][key - 1];
+                        TextoCifrado.Add(CadenaOlas[j][key - 1]);
                     }
                 }
                 else
                 {
                     for (int j = 0; j < CantOlas; j++)
                     {
-                        TextoCifrado += CadenaOlas[j][i];
-                        TextoCifrado += CadenaOlas[j][LongOla - i];
+                        TextoCifrado.Add(CadenaOlas[j][i]);
+                        TextoCifrado.Add(CadenaOlas[j][LongOla - i]);
                     }
                 }
             }
-            return TextoCifrado;
+
+            using (BinaryWriter writer = new BinaryWriter(File.Open(ArchivoCodificado, FileMode.Create)))
+            {
+                for (int i = 0; i < TextoCifrado.Count; i++)
+                {
+                    writer.Write(TextoCifrado[i]);
+                }
+            }
         }
-        public string Decrypt(object cadena, int clave)
+        public void Decrypt(string ArchivoNuevo, string ArchivoDecodificado, int clave)
         {
-            string cad = cadena.ToString();
             int LongOla = 2 + 2 * (clave - 2);//la cantidad de caracteres de una ola
-            int NumOlas = cad.Length / LongOla;
+            int contador = 0;
+            long Caracteres = 0;
+            byte[] Arreglo = new byte[12000000];
 
-            SepararMensajeD(cadena, clave);
+            using (Stream Text = new FileStream(ArchivoNuevo, FileMode.OpenOrCreate, FileAccess.Read))
+            {
+                Caracteres = Text.Length;
+            }
+            using (BinaryReader reader = new BinaryReader(File.Open(ArchivoNuevo, FileMode.Open)))
+            {
+                foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
+                {
 
-            string MensajeDescodificado = default;
+                    Arreglo[contador] = nuevo;
+                    contador++;
+                }
+            }
+            byte[] ArregloZZ = new byte[contador];
+
+            for (int i = 0; i < contador; i++)
+            {
+                ArregloZZ[i] = Arreglo[i];
+            }
+
+            int NumOlas = ArregloZZ.Length / LongOla;
+
+            SepararMensajeD(ArregloZZ, clave);
+
+            List<byte> MensajeDescodificado = new List<byte>();
 
             for (int i = 0; i < NumOlas; i++)
             {
-                MensajeDescodificado += CadenaInversa[0][i];
+                MensajeDescodificado.Add(CadenaInversa[0][i]);
                 for (int j = 1; j < clave - 1; j++)
                 {
-                    MensajeDescodificado += CadenaInversa[j][2 * i];
+                    MensajeDescodificado.Add(CadenaInversa[j][2 * i]);
                 }
-                MensajeDescodificado += CadenaInversa[clave - 1][i];
+                MensajeDescodificado.Add(CadenaInversa[clave - 1][i]);
                 for (int k = clave - 2; k > 0; k--)
                 {
-                    MensajeDescodificado += CadenaInversa[k][(2 * i) + 1];
+                    MensajeDescodificado.Add(CadenaInversa[k][(2 * i) + 1]);
                 }
             }
-            MensajeDescodificado = MensajeDescodificado.Replace("$" , string.Empty);
-            return MensajeDescodificado;
+            MensajeDescodificado.Reverse();
+            int cont = 0;
+            bool llavewhile = true;
+            while (llavewhile)
+            {
+                if (MensajeDescodificado[cont] == 0)
+                {
+                    MensajeDescodificado.RemoveAt(0);
+                }
+                else
+                {
+                    llavewhile = false;
+                }
+            }
+            MensajeDescodificado.Reverse();
+
+            using (BinaryWriter writer = new BinaryWriter(File.Open(ArchivoDecodificado, FileMode.Create)))
+            {
+                for (int i = 0; i < MensajeDescodificado.Count; i++)
+                {
+                    writer.Write(MensajeDescodificado[i]);
+                }
+            }
         }
-        void SepararMensajeD(object cadena, int clave) 
+        void SepararMensajeD(byte[] Cadena, int clave)
         {
-            string cad = cadena.ToString();
             int LongOla = 2 + 2 * (clave - 2);//la cantidad de caracteres de una ola
-            int NumOlas =cad.Length/LongOla;//cuantas olas hay en total
-            char[] mensaje = cad.ToCharArray();
+            int NumOlas = Cadena.Length / LongOla;//cuantas olas hay en total
             CadenaInversa.Clear();
-            string[] MensajeSeparado = new string[2 * NumOlas];
+            byte[] MensajeSeparado = new byte[2 * NumOlas];
 
             int cont = 0;
             for (int i = 0; i < clave; i++)
             {
-                MensajeSeparado = new string[2 * NumOlas];
+                MensajeSeparado = new byte[2 * NumOlas];
                 if (i == 0)
                 {
                     for (int j = 0; j < NumOlas; j++)
                     {
-                        MensajeSeparado[j] = mensaje[j].ToString();
+                        MensajeSeparado[j] = Cadena[j];
                         cont++;
                     }
                     CadenaInversa.Add(MensajeSeparado);
                 }
-                else if (i == clave-1)
+                else if (i == clave - 1)
                 {
                     for (int j = 0; j < NumOlas; j++)
                     {
-                        MensajeSeparado[j] = mensaje[cont+j].ToString();
+                        MensajeSeparado[j] = Cadena[cont + j];
                     }
                     CadenaInversa.Add(MensajeSeparado);
                 }
@@ -133,32 +206,45 @@ namespace LibreriaCifrados
                 {
                     for (int j = 0; j < NumOlas * 2; j++)
                     {
-                        MensajeSeparado[j] = mensaje[cont + j].ToString();
+                        MensajeSeparado[j] = Cadena[cont + j];
                     }
                     cont += NumOlas * 2;
                     CadenaInversa.Add(MensajeSeparado);
                 }
             }
         }
-        public object LlenadoText(object mensaje, int clave) 
+        public byte[] LlenadoText(byte[] mensaje, int clave) 
         {
-            int LongitudObj = (Convert.ToString(mensaje).Length) % clave;
+            int LongitudObj = (mensaje.Length) % clave;
             int Agregar = clave - LongitudObj;
+            int extra = 0;
             if (LongitudObj != 0)
             {
                 for (int i = 0; i < Agregar; i++)
                 {
-                    mensaje += "$";
+                    extra++;
                 }
             }
-            return mensaje;
+            byte[] Nuevo = new byte [mensaje.Length+extra];
+            for (int i = 0; i < Nuevo.Length; i++)
+            {
+                if (i<mensaje.Length)
+                {
+                    Nuevo[i] = mensaje[i];
+                }
+                else
+                {
+                    Nuevo[i] = default;
+                }
+            }
+            return Nuevo;
         }
 
-        public void LlenarOlas(List<string> cadena, int clave) 
+        public void LlenarOlas(List<byte> cadena, int clave) 
         {
+            byte[] letras = new byte[clave];
             if (cadena.Count != 0)
-            {
-                string[] letras = new string[clave];
+            {    
                 for (int i = 0; i < clave; i++)
                 {
                     letras[i] = cadena[0];
@@ -169,6 +255,7 @@ namespace LibreriaCifrados
                         LlenarOlas(cadena, clave);
                     }
                 }
+                letras = default;
             }
         }
     }

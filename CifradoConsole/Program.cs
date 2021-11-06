@@ -29,16 +29,18 @@ namespace CifradoConsole
 
                 if (numero==1)
                 {
-                    Console.WriteLine("Ingrese el Texto que desea cifrar");
+                    Console.WriteLine("Ingrese la ruta del archivo original");
                     string Texto = Convert.ToString(Console.ReadLine());
+
+                    Console.WriteLine("Ingrese la ruta del archivo nuevo");
+                    string Textonuevo = Convert.ToString(Console.ReadLine());
 
                     Console.WriteLine("Ingrese la Clave del Texto");
                     int Clave = Convert.ToInt32(Console.ReadLine());
 
                     object aCifrar = Texto;
 
-                    string MensajeEncriptado=CifZigZag.EncryptZZ(aCifrar, Clave);
-                    Console.WriteLine(MensajeEncriptado);
+                    CifZigZag.EncryptZZ(Texto, Textonuevo, Clave);
                     Console.ReadLine();
                 }
                 else if(numero==2)
@@ -60,14 +62,15 @@ namespace CifradoConsole
                     Console.WriteLine("Ingrese el Texto que desea decifrar");
                     string Texto = Convert.ToString(Console.ReadLine());
 
+                    Console.WriteLine("Ingrese la ruta del archivo nuevo");
+                    string Textonuevo = Convert.ToString(Console.ReadLine());
 
                     Console.WriteLine("Ingrese la Clave del Texto");
                     int Clave = Convert.ToInt32(Console.ReadLine());
 
                     object aCifrar = Texto;
 
-                    string MensajeEncriptado = CifZigZag.Decrypt(aCifrar, Clave);
-                    Console.WriteLine(MensajeEncriptado);
+                    CifZigZag.Decrypt(Texto, Textonuevo, Clave);
                     Console.ReadLine();
                 }
                 else if (numero==4)
