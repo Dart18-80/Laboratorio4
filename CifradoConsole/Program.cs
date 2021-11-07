@@ -45,15 +45,18 @@ namespace CifradoConsole
                 }
                 else if(numero==2)
                 {
-                    Console.WriteLine("Ingrese el Texto que desea cifrar");
+                    Console.WriteLine("Ingrese la ruta del archivo que quiere cifrar que desea cifrar");
                     string Texto = Convert.ToString(Console.ReadLine());
+
+                    Console.WriteLine("Ingrese la ruta del archivo nuevo");
+                    string Textonuevo = Convert.ToString(Console.ReadLine());
 
                     Console.WriteLine("Ingrese la Clave del Texto");
                     string Clave = Convert.ToString(Console.ReadLine());
 
                     object aCifrar = Texto;
-                    string MensajeCifrado=CifCesar.Encrypt(aCifrar, Clave);
-                    string Mensajedecifrado = CifCesar.Decrypt(MensajeCifrado, Clave);
+                    CifCesar.Encrypt(Clave, Texto, Textonuevo);
+                    CifCesar.Decrypt(Clave, Textonuevo, "C:\\Users\\randr\\OneDrive\\Escritorio\\NuevoResultado.txt");
 
 
                 }

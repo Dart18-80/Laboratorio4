@@ -24,8 +24,13 @@ namespace LibreriaCifrados
                     DescifrarDiccionary[key[i]] = Contador;
                     Contador++;
                 }
-                while (Contador <= 255) 
+                bool verificar = true;
+                while (verificar) 
                 {
+                    if (Contador==255)
+                    {
+                        verificar = false;
+                    }
                     if (Saltar(Contador, key) == false)
                     {
                         InitialDiccionary[Contador] = CorrerByte;
@@ -76,8 +81,8 @@ namespace LibreriaCifrados
                 }
             }
 
-            string[] KeyChar = Key.Split();
-            byte[] KeyByte = new byte[KeyChar.Length-1];
+            char[] KeyChar = Key.ToCharArray();
+            byte[] KeyByte = new byte[KeyChar.Length];
             for (long i = 0; i < KeyChar.Length; i++) 
             {
                 KeyByte[i] = Convert.ToByte(KeyChar[i]);
@@ -121,15 +126,13 @@ namespace LibreriaCifrados
                 }
             }
 
-            string[] KeyChar = Key.Split();
-            byte[] KeyByte = new byte[KeyChar.Length - 1];
+            char[] KeyChar = Key.ToCharArray();
+            byte[] KeyByte = new byte[KeyChar.Length ];
             for (long i = 0; i < KeyChar.Length; i++)
             {
                 KeyByte[i] = Convert.ToByte(KeyChar[i]);
             }
-
             CreateNewDiccionary(KeyByte);
-
             for (int i = 0; i < contador; i++)
             {
                 Nuevo[i] = (byte)DescifrarDiccionary[Arreglo[i]];

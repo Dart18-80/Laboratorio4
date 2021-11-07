@@ -108,12 +108,12 @@ namespace Laboratorio4.Controllers
             {
                 CifZigZag.Decrypt(filepath,direccionNuevo, Convert.ToInt32(key));
 
-                return Ok("El archivo se creo exitosamente, se guardo en la carpeta UploadCifrados del Laboratorio");
+                return Ok("El archivo se creo exitosamente, se guardo en la carpeta Upload con la extension DES");
             }
             else if (extencion[1] == "csr")
             {
                 CifCesar.Decrypt(key, filepath, direccionNuevo);
-                return Ok("El archivo se creo exitosamente, se guardo en la carpeta UploadCifrados del Laboratorio");
+                return Ok("El archivo se creo exitosamente, se guardo en la carpeta Upload con la extension DES");
             }
             else
             {
